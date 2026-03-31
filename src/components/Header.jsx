@@ -1,5 +1,3 @@
-// src/components/Header.jsx
-
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -7,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { FaFire, FaHeart, FaStar, FaUser, FaMoon, FaSun, FaUsers, FaPenNib } from 'react-icons/fa';
 
 const Header = () => {
-    const { totalXP, streak, hearts } = useContext(UserContext);
+    const { totalXP, streak, hearts, name } = useContext(UserContext);
     const { darkMode, toggleDarkMode } = useTheme();
     const location = useLocation();
 
@@ -22,7 +20,7 @@ const Header = () => {
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center">
                     <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-dawn-500 to-peak-red bg-clip-text text-transparent">
-                        Ketal's Peak 🐧
+                        KETAL 🐧
                     </Link>
 
                     <nav className="hidden md:flex items-center space-x-6">
@@ -61,23 +59,17 @@ const Header = () => {
                             </div>
                         </div>
 
-                        <Link to="/profile" className="text-mountain-500 dark:text-mountain-300 hover:text-dawn-500 transition">
+                        <Link to="/profile" className="text-mountain-500 dark:text-mountain-300 hover:text-dawn-500 transition" title={name || 'Профиль'}>
                             <FaUser size={20} />
                         </Link>
 
                         <button
                             onClick={toggleDarkMode}
                             className="text-mountain-500 dark:text-mountain-300 hover:text-dawn-500 transition"
+                            aria-label="Переключить тему"
                         >
                             {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
                         </button>
-
-                        {/* Mobile menu button */}
-                        <div className="md:hidden">
-                            <Link to="/community" className="text-gray-600 dark:text-gray-400">
-                                <FaUsers size={20} />
-                            </Link>
-                        </div>
                     </div>
                 </div>
 

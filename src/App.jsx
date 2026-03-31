@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
@@ -9,7 +7,6 @@ import Home from './components/Home';
 import ProfilePage from './components/ProfilePage';
 import Lesson from './components/Lesson';
 import CoursePage from './components/CoursePage';
-
 import CommunityPage from './components/CommunityPage';
 import CreatorPage from './components/Creator/CreatorPage.jsx';
 
@@ -18,6 +15,8 @@ import CreatorPage from './components/Creator/CreatorPage.jsx';
 // const Lesson = () => <div className="text-center py-10">Урок</div>;
 // const CommunityPage = () => <div className="text-center py-10">Сообщество</div>;
 // const CreatorPage = () => <div className="text-center py-10">Творец</div>;
+// const ProfilePage = () => <div className="text-center py-10">Страница курса</div>;
+
 
 function App() {
     return (

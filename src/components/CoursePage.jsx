@@ -1,5 +1,3 @@
-// src/components/CoursePage.jsx
-
 import React, { useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -8,9 +6,17 @@ import { FaCheckCircle, FaArrowLeft, FaBook, FaStar } from 'react-icons/fa';
 
 const CoursePage = () => {
     const { courseId } = useParams();
-    const { completedLessons, getCourseProgress } = useContext(UserContext);
+    const { completedLessons, getCourseProgress, userContent } = useContext(UserContext);
 
-    const course = courses.find(c => c.id === courseId);
+    // Ищем курс сначала в официальных, потом в пользовательских
+    let course = courses.find(c => c.id === courseId);
+    let isOfficial = true;
+
+    if (!course) {
+        const userCourses = userContent?.courses || [];
+        course = userCourses.find(c => c.id === courseId);
+        isOfficial = false;
+    }
 
     if (!course) {
         return (
@@ -21,18 +27,18 @@ const CoursePage = () => {
         );
     }
 
-    const progress = getCourseProgress(courseId);
-    const totalLessons = course.lessons.length;
+    const progress = getCourseProgress(courseId, course.lessons);
+    const totalLessons = course.lessons?.length || 0;
     const completedCount = progress.completedLessons.length;
 
     return (
         <div className="max-w-4xl mx-auto">
             <Link
-                to="/"
+                to={isOfficial ? "/" : "/community"}
                 className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-dawn-500 mb-6 transition-colors"
             >
                 <FaArrowLeft className="mr-2" />
-                Назад к курсам
+                {isOfficial ? 'Назад к курсам' : 'Назад в сообщество'}
             </Link>
 
             <div className={`bg-gradient-to-r ${course.color} rounded-xl p-8 text-white mb-8`}>
@@ -41,6 +47,7 @@ const CoursePage = () => {
                         <span className="text-5xl mb-4 block">{course.icon}</span>
                         <h1 className="text-3xl font-bold">{course.title}</h1>
                         <p className="text-white/90 mt-2 text-lg">{course.description}</p>
+                        <p className="text-white/70 mt-1 text-sm">by {course.author || 'KETAL'}</p>
                     </div>
                 </div>
 
@@ -66,9 +73,10 @@ const CoursePage = () => {
                     Программа курса
                 </h2>
 
-                {course.lessons.map((lesson, index) => {
+                {course.lessons?.map((lesson, index) => {
                     const isCompleted = completedLessons.includes(lesson.id);
                     const isNext = index === completedCount;
+                    const isLocked = index > completedCount && !isCompleted;
 
                     return (
                         <Link
@@ -80,7 +88,7 @@ const CoursePage = () => {
                                     : isNext
                                         ? 'border-dawn-500 bg-dawn-50 dark:bg-dawn-900/20 hover:border-dawn-600'
                                         : 'border-gray-200 dark:border-mountain-700 bg-white dark:bg-mountain-800 hover:border-gray-300 dark:hover:border-mountain-600'
-                            }`}
+                            } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-4">
@@ -108,41 +116,13 @@ const CoursePage = () => {
                                         {lesson.xpReward} XP
                                     </span>
                                     <span className="text-xs text-gray-400 dark:text-gray-500">
-                                        {lesson.questions.length} вопросов
+                                        {lesson.questions?.length || 0} вопросов
                                     </span>
                                 </div>
                             </div>
                         </Link>
                     );
                 })}
-            </div>
-
-            <div className="mt-8 bg-white dark:bg-mountain-800 rounded-xl p-6 shadow-md">
-                <h3 className="font-bold text-lg mb-4 text-mountain-800 dark:text-mountain-100">
-                    О курсе
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-dawn-500">{totalLessons}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Уроков</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-dawn-500">
-                            {course.lessons.reduce((sum, l) => sum + l.xpReward, 0)}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Всего XP</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-dawn-500">
-                            {course.lessons.reduce((sum, l) => sum + l.questions.length, 0)}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Вопросов</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-dawn-500">{progress.progress}%</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Прогресс</p>
-                    </div>
-                </div>
             </div>
         </div>
     );

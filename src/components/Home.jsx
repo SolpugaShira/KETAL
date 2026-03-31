@@ -1,5 +1,3 @@
-// src/components/Home.jsx
-
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -9,14 +7,12 @@ import { FaCheckCircle, FaBook, FaStar } from 'react-icons/fa';
 const Home = () => {
     const context = useContext(UserContext);
 
-    // Защита от undefined context
     if (!context) {
         return <div className="text-center py-10">Загрузка...</div>;
     }
 
     const { completedLessons, getCourseProgress } = context;
 
-    // Защита от undefined courses
     if (!courses || !Array.isArray(courses)) {
         return <div className="text-center py-10 text-red-500">Ошибка загрузки курсов</div>;
     }
@@ -24,7 +20,7 @@ const Home = () => {
     return (
         <div>
             <h1 className="text-3xl font-bold text-center mb-4 text-mountain-800 dark:text-mountain-100">
-                Выберите курс
+                Официальные курсы
             </h1>
             <p className="text-center text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
                 Пройдите путь от новичка до мастера. Каждый курс состоит из последовательных уроков
@@ -33,10 +29,9 @@ const Home = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {courses.map((course) => {
-                    // Защита от undefined course
                     if (!course) return null;
 
-                    const progress = getCourseProgress ? getCourseProgress(course.id) : { completedLessons: [], progress: 0 };
+                    const progress = getCourseProgress(course.id, course.lessons);
                     const completedCount = progress.completedLessons?.length || 0;
                     const totalCount = course.lessons?.length || 0;
                     const isCompleted = totalCount > 0 && completedCount === totalCount;
@@ -52,6 +47,7 @@ const Home = () => {
                                         <span className="text-4xl mb-2 block">{course.icon || '📚'}</span>
                                         <h2 className="text-xl font-bold">{course.title}</h2>
                                         <p className="text-white/90 text-sm mt-1">{course.description}</p>
+                                        <p className="text-white/70 text-xs mt-1">by {course.author || 'KETAL'}</p>
                                     </div>
                                     {isCompleted && (
                                         <FaCheckCircle className="text-white text-3xl" />

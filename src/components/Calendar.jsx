@@ -1,14 +1,24 @@
-import React from 'react';
-import { useUser } from '../context/UserContext';
+import React, { useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 
 const Calendar = () => {
-    const { studyDays } = useUser();
+    const { studyDays, isLoaded } = useContext(UserContext);
+
+    if (!isLoaded) {
+        return (
+            <div className="bg-white dark:bg-mountain-800 rounded-lg shadow-md p-4 text-center">
+                <p className="text-gray-500 dark:text-gray-400">Загрузка календаря...</p>
+            </div>
+        );
+    }
+
+    const safeStudyDays = Array.isArray(studyDays) ? studyDays : [];
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth();
 
     const firstDayOfMonth = new Date(year, month, 1);
-    const startDayOfWeek = firstDayOfMonth.getDay(); // 0 - воскресенье
+    const startDayOfWeek = firstDayOfMonth.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const daysArray = [];
@@ -35,7 +45,7 @@ const Calendar = () => {
                     <div key={idx} className="aspect-square flex items-center justify-center text-sm">
                         {item && (
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                studyDays.includes(item.date)
+                                safeStudyDays.includes(item.date)
                                     ? 'bg-dawn-500 text-white font-bold'
                                     : 'bg-gray-100 dark:bg-mountain-700 text-gray-800 dark:text-gray-200'
                             }`}>
